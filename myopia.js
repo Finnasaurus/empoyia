@@ -14,7 +14,7 @@ function degreesDistToBlur(degrees, objectDistance) {
   //assuming pupil diametter of 4mm
   let pupilDiameter = 4;
 
-  let blur = (pupilDiameter / 2) * abs(1 / farPoint - 1 / objectDistance);
+  let blur = (pupilDiameter / 2) * abs(1 / degrees - 1 / objectDistance);
 
   return blur;
 }

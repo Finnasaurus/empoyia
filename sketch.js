@@ -1,3 +1,8 @@
+// import { FaceMeasurement } from "./tracking.js";
+// import { degreesDistToBlur } from "./myopia.js";
+
+let faceMeasurer;
+
 let img;
 let input;
 let blurAmount = 0;
@@ -13,10 +18,29 @@ function setup() {
   background(100);
   frameRate(30);
 
+  faceMeasurer = new FaceMeasurement({
+    focalLength: 50,
+    sensorWidth: 4.5,
+    imageWidth: 640,
+    imageHeight: 480,
+    typicalFaceHeight: 200,
+    maxFaces: 1,
+  });
+
+  faceMeasurer.initialize(window).then((initialized) => {
+    if (!initialized) {
+      console.error("Failed to initialize face measurement system");
+    }
+  });
+
+  // faceMeasurer.initialize();
+  // console.log(faceMeasurer);
+
+  // console.log("FaceMeasurer initialized");
+
   // Create an input and place it beneath the canvas.
   input = createInput("");
   input.position(0, 100);
-
   // Call repaint() when input is detected.
   input.input(repaint);
 
@@ -26,12 +50,27 @@ function setup() {
 }
 
 function draw() {
+  const measurements = faceMeasurer.getMeasurements();
+  // console.log("Measurements:", measurements);
+  if (measurements) {
+    console.log("Face measurements (mm):");
+    console.log("Height:", measurements.faceHeight.toFixed(1));
+    console.log("Width:", measurements.faceWidth.toFixed(1));
+    console.log("Distance:", measurements.distance.toFixed(1));
+  }
+
   if (onSubmit) {
-    drawImage();
+    // let blur = degreesDistToBlur(300, measurements.distance);
+    let blur = measurements.distance / 1000 - 3; // fake function
+    console.log(blur);
+    drawImage(blur);
+  } else {
+    image(faceMeasurer.video, 0, 0, width, height);
+    faceMeasurer.drawFacePoints(this);
   }
 }
 
-function drawImage() {
+function drawImage(blurAmount) {
   if (blurAmount < 0) {
     blurAmount = 0;
   }
