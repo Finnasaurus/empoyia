@@ -1,153 +1,103 @@
-class FaceMeasurement {
-  constructor(config = {}) {
-    // Default camera parameters
-    this.FOCAL_LENGTH_MM = config.focalLength || 50;
-    this.SENSOR_WIDTH_MM = config.sensorWidth || 4.5;
-    this.IMAGE_WIDTH_PIXELS = config.imageWidth || 640;
-    this.IMAGE_HEIGHT_PIXELS = config.imageHeight || 480;
-    this.TYPICAL_FACE_HEIGHT_MM = config.typicalFaceHeight || 200;
+let faceMesh;
+let options = { maxFaces: 1, refineLandmarks: false, flipped: false };
+let video;
+let faces = [];
+let maxX = 0, maxY = 0;
+let minX = Infinity, minY = Infinity;  
+let xLen = 0;
+let yLen = 0;
 
-    // FaceMesh configuration
-    this.options = {
-      maxFaces: config.maxFaces || 1,
-      refineLandmarks: config.refineLandmarks || false,
-      flipped: config.flipped || false
-    };
+// MacBook Pro 2019 FaceTime HD Camera parameters (assumed by claude)
+const FOCAL_LENGTH_MM = 50;      // Focal length
+const SENSOR_WIDTH_MM = 4.5;     // 720p FaceTime HD camera sensor width (approximate)
+const IMAGE_WIDTH_PIXELS = 640;  // Image width in pixels
+const TYPICAL_FACE_HEIGHT_MM = 200;  // Average human face width in mm
 
-    // Initialize variables
-    this.faceMesh = null;
-    this.video = null;
-    this.faces = [];
-    this.measurements = {
-      maxX: 0,
-      maxY: 0,
-      minX: Infinity,
-      minY: Infinity,
-      xLen: 0,
-      yLen: 0
-    };
-
-    // Bind methods
-    this.gotFaces = this.gotFaces.bind(this);
-    this.calculateDistance = this.calculateDistance.bind(this);
-    this.pixelsToMm = this.pixelsToMm.bind(this);
-    this.getMeasurements = this.getMeasurements.bind(this);
-  }
-
-  async initialize() {
-    // Initialize faceMesh
-    this.faceMesh = await ml5.faceMesh(this.options);
-    
-    // Create and configure video
-    this.video = createCapture(VIDEO);
-    this.video.size(this.IMAGE_WIDTH_PIXELS, this.IMAGE_HEIGHT_PIXELS);
-    this.video.hide();
-
-    // Start face detection
-    this.faceMesh.detectStart(this.video, this.gotFaces);
-  }
-
-  gotFaces(results) {
-    this.faces = results;
-  }
-
-  calculateDistance(faceHeightPixels) {
-    return (this.FOCAL_LENGTH_MM * this.TYPICAL_FACE_HEIGHT_MM * this.IMAGE_WIDTH_PIXELS) / 
-           (faceHeightPixels * this.SENSOR_WIDTH_MM);
-  }
-
-  pixelsToMm(pixels, distance) {
-    return (pixels * distance * this.SENSOR_WIDTH_MM) / 
-           (this.FOCAL_LENGTH_MM * this.IMAGE_WIDTH_PIXELS);
-  }
-
-  getMeasurements() {
-    // Reset measurements
-    this.measurements.maxX = -Infinity;
-    this.measurements.minX = Infinity;
-    this.measurements.maxY = -Infinity;
-    this.measurements.minY = Infinity;
-
-    // Process face measurements
-    if (this.faces.length > 0) {
-      const face = this.faces[0]; // Get first face
-      
-      // Find min/max points
-      face.keypoints.forEach(keypoint => {
-        this.measurements.maxX = Math.max(this.measurements.maxX, keypoint.x);
-        this.measurements.maxY = Math.max(this.measurements.maxY, keypoint.y);
-        this.measurements.minX = Math.min(this.measurements.minX, keypoint.x);
-        this.measurements.minY = Math.min(this.measurements.minY, keypoint.y);
-      });
-
-      // Calculate lengths
-      this.measurements.xLen = this.measurements.maxX - this.measurements.minX;
-      this.measurements.yLen = this.measurements.maxY - this.measurements.minY;
-
-      // Calculate real-world measurements
-      const estimatedDistance = this.calculateDistance(this.measurements.xLen);
-      const heightMm = this.pixelsToMm(this.measurements.yLen, estimatedDistance);
-      const widthMm = this.pixelsToMm(this.measurements.xLen, estimatedDistance);
-
-      return {
-        faceHeight: heightMm,
-        faceWidth: widthMm,
-        distance: estimatedDistance,
-        keypoints: face.keypoints
-      };
-    }
-    
-    return null;
-  }
-
-  drawFacePoints(p5Instance, pointSize = 5) {
-    if (this.faces.length > 0) {
-      const face = this.faces[0];
-      
-      face.keypoints.forEach(keypoint => {
-        p5Instance.fill(0, 255, 0);
-        p5Instance.noStroke();
-        p5Instance.circle(keypoint.x, keypoint.y, pointSize);
-      });
-    }
-  }
+function calculateDistance(faceheightPixels) {
+  // Distance = (Focal Length × Real Object Width × Image Width) / (Object Width in Pixels × Sensor Width)
+  return (FOCAL_LENGTH_MM * TYPICAL_FACE_HEIGHT_MM * IMAGE_WIDTH_PIXELS) / (faceheightPixels * SENSOR_WIDTH_MM);
 }
 
-// Usage example:
-/*
-let faceMeasurer;
+function pixelsToMm(pixels, distance) {
+  // Real Size = (Object Size in Pixels × Distance × Sensor Size) / (Focal Length × Image Size in Pixels)
+  return (pixels * distance * SENSOR_WIDTH_MM) / (FOCAL_LENGTH_MM * IMAGE_WIDTH_PIXELS);
+}
+
+function preload() {
+  faceMesh = ml5.faceMesh(options);
+}
 
 function setup() {
   createCanvas(640, 480);
+  // Create the video and hide it
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+  video.hide();
   
-  // Initialize with custom parameters if needed
-  faceMeasurer = new FaceMeasurement({
-    focalLength: 50,
-    sensorWidth: 4.5,
-    imageWidth: 640,
-    imageHeight: 480,
-    typicalFaceHeight: 200,
-    maxFaces: 1
-  });
-  
-  faceMeasurer.initialize();
+  // Start detecting faces from the webcam video
+  faceMesh.detectStart(video, gotFaces);
+}
+
+function gotFaces(results) {
+  faces = results;
 }
 
 function draw() {
-  // Draw video
-  image(faceMeasurer.video, 0, 0, width, height);
+  image(video, 0, 0, width, height);
   
-  // Get measurements
-  const measurements = faceMeasurer.getMeasurements();
+  // Reset max values for each frame
+  maxX = -Infinity;
+  minX = Infinity;
+  maxY = -Infinity;
+  minY = Infinity;
   
-  if (measurements) {
-    console.log("Face measurements (mm):");
-    console.log("Height:", measurements.faceHeight.toFixed(1));
-    console.log("Width:", measurements.faceWidth.toFixed(1));
-    console.log("Distance:", measurements.distance.toFixed(1));
+  // Draw all the tracked face points and find max values
+  for (let i = 0; i < faces.length; i++) {
+    let face = faces[i];
+    for (let j = 0; j < face.keypoints.length; j++) {
+      let keypoint = face.keypoints[j];
+      
+      // Update maximum values
+      maxX = Math.max(maxX, keypoint.x);
+      maxY = Math.max(maxY, keypoint.y);
+
+      // Update maximum values
+      minX = Math.min(minX, keypoint.x);
+      minY = Math.min(minY, keypoint.y);
+
+      // Draw keypoint
+      fill(0, 255, 0);
+      noStroke();
+      circle(keypoint.x, keypoint.y, 5);
+    }
   }
   
-  // Draw face points
-  faceMeasurer.drawFacePoints(this);
+  xLen = maxX - minX;
+  yLen = maxY - minY;
+
+  if (faces.length > 0) {
+    // Estimate distance using face width
+    let estimatedDistance = calculateDistance(xLen);
+    
+    // Convert measurements to mm using the estimated distance
+    let yLenMm = pixelsToMm(yLen, estimatedDistance);
+    let xLenMm = pixelsToMm(xLen, estimatedDistance);
+
+    // Log measurements
+    console.log("Face measurements (mm):");
+    console.log("Height:", yLenMm.toFixed(1));
+    console.log("Width:", xLenMm.toFixed(1));
+    console.log("Distance:", estimatedDistance.toFixed(1));
+
+  }
+  
+  // // Display information
+  // // fill(0, 255, 0);
+  // // textSize(16);
+  // // text("Faces: " + faces.length, 10, 360);
+  // // console.log("Max X: " + maxX.toFixed(2), 10, 380);
+  // // console.log("Max Y: " + maxY.toFixed(2), 10, 400);
+  // // console.log("Min X: " + minX.toFixed(2), 10, 400);
+  // // console.log("Min Y: " + minY.toFixed(2), 10, 400);
+  // console.log("yLen: " + yLen.toFixed(2), 10, 400)
 }
-*/
