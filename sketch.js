@@ -51,6 +51,7 @@ function setup() {
 
 function draw() {
   const measurements = faceMeasurer.getMeasurements();
+
   // console.log("Measurements:", measurements);
   if (measurements) {
     console.log("Face measurements (mm):");
@@ -61,9 +62,11 @@ function draw() {
 
   if (onSubmit) {
     // let blur = degreesDistToBlur(300, measurements.distance);
-    let blur = measurements.distance / 1000 - 3; // fake function
-    console.log(blur);
-    drawImage(blur);
+    if (measurements) {
+      blurAmount = measurements.distance / 1000 - 3; // fake function
+      console.log(blurAmount);
+    }
+    drawImage(blurAmount);
   } else {
     image(faceMeasurer.video, 0, 0, width, height);
     faceMeasurer.drawFacePoints(this);
