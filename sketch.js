@@ -20,12 +20,22 @@ let sitesLabel;
 let sitesSelect;
 let websiteElementsVisible = false;
 
+// Add this function at the beginning of your code to handle paths
+function getBasePath() {
+  // Check if we're on GitHub Pages at /empoyia
+  if (window.location.pathname.includes("/empoyia")) {
+    return "/empoyia";
+  }
+  // Otherwise (local development) use root
+  return "";
+}
+
 // Load the image.
 function preload() {
-  snellenChartImg = loadImage("/assets/snellen-chart-crop.jpg");
-  balloonImg = loadImage("assets/hot_air.webp");
+  snellenChartImg = loadImage(basePath + "assets/snellen-chart-crop.jpg");
+  balloonImg = loadImage(basePath + "assets/hot_air.webp");
 
-  bigFont = loadFont("assets/font/DelaGothicOne-Regular.ttf");
+  bigFont = loadFont(basePath + "assets/font/DelaGothicOne-Regular.ttf");
 }
 
 function setup() {
