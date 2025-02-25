@@ -8,6 +8,9 @@ let input;
 let blurAmount = 0;
 let onSubmit = false;
 let imageID = "snellen";
+let snellenChartImg;
+let balloonImg;
+let bigFont;
 
 // WEBSITE PAGE //
 let iframe;
