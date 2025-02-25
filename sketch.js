@@ -22,10 +22,10 @@ let websiteElementsVisible = false;
 
 // Load the image.
 function preload() {
-  snellenChartImg = loadImage("empoyia/assets/snellen-chart-crop.jpg");
-  balloonImg = loadImage("empoyia/assets/hot_air.webp");
+  snellenChartImg = loadImage("/assets/snellen-chart-crop.jpg");
+  balloonImg = loadImage("assets/hot_air.webp");
 
-  bigFont = loadFont("empoyia/assets/font/DelaGothicOne-Regular.ttf");
+  bigFont = loadFont("assets/font/DelaGothicOne-Regular.ttf");
 }
 
 function setup() {
