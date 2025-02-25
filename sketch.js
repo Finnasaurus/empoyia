@@ -1,5 +1,14 @@
 // import { FaceMeasurement } from "./tracking.js";
 // import { degreesDistToBlur } from "./myopia.js";
+// Add this function at the beginning of your code to handle paths
+function getBasePath() {
+  // Check if we're on GitHub Pages at /empoyia
+  if (window.location.pathname.includes("/empoyia")) {
+    return "/empoyia";
+  }
+  // Otherwise (local development) use root
+  return "";
+}
 
 // INPUT PAGE //
 let faceMeasurer;
@@ -22,16 +31,6 @@ let instructions;
 let sitesLabel;
 let sitesSelect;
 let websiteElementsVisible = false;
-
-// Add this function at the beginning of your code to handle paths
-function getBasePath() {
-  // Check if we're on GitHub Pages at /empoyia
-  if (window.location.pathname.includes("/empoyia")) {
-    return "/empoyia";
-  }
-  // Otherwise (local development) use root
-  return "";
-}
 
 // Load the image.
 function preload() {
