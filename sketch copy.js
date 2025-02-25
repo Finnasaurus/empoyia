@@ -33,7 +33,7 @@ function pixelsToMm(pixels, distance) {
   );
 }
 
-let img;
+let snellenChartImg;
 let input;
 let blurAmount = 0;
 let onSubmit = false;
@@ -41,7 +41,7 @@ let onSubmit = false;
 // Load the image.
 function preload() {
   faceMesh = ml5.faceMesh(options);
-  img = loadImage("/assets/snellen-chart-crop.jpg");
+  snellenChartImg = loadImage("/assets/snellen-chart-crop.jpg");
 }
 
 function setup() {
@@ -127,7 +127,7 @@ function drawImage(blurAmount) {
   if (blurAmount < 0) {
     blurAmount = 0;
   }
-  image(img, 0, 0, width, height);
+  image(snellenChartImg, 0, 0, width, height);
   filter(BLUR, blurAmount);
 }
 
