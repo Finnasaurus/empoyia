@@ -32,6 +32,8 @@ function getBasePath() {
 
 // Load the image.
 function preload() {
+  const basePath = getBasePath();
+
   snellenChartImg = loadImage(basePath + "assets/snellen-chart-crop.jpg");
   balloonImg = loadImage(basePath + "assets/hot_air.webp");
 
