@@ -36,10 +36,10 @@ let websiteElementsVisible = false;
 function preload() {
   const basePath = getBasePath();
 
-  snellenChartImg = loadImage(basePath + "assets/snellen-chart-crop.jpg");
-  balloonImg = loadImage(basePath + "assets/hot_air.webp");
+  snellenChartImg = loadImage(basePath + "/assets/snellen-chart-crop.jpg");
+  balloonImg = loadImage(basePath + "/assets/hot_air.webp");
 
-  bigFont = loadFont(basePath + "assets/font/DelaGothicOne-Regular.ttf");
+  bigFont = loadFont(basePath + "/assets/font/DelaGothicOne-Regular.ttf");
 }
 
 function setup() {
