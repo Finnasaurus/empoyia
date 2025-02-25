@@ -44,7 +44,7 @@ function preload() {
 
 function setup() {
   createCanvas(displayWidth, displayHeight);
-  background(100);
+  background(230, 188, 140, 100);
   frameRate(30);
 
   faceMeasurer = new FaceMeasurement({
@@ -66,10 +66,13 @@ function setup() {
   textFont(bigFont);
   textAlign(CENTER);
   textSize(64);
-  text("EMPYOICA", width / 2, height / 2);
+  text("EMPYOICA", width / 2, height / 2 - 100);
+
+  textFont("Montserrat");
+  textSize(28);
+  text("Enter your degree", width / 2, height / 2);
 
   // Center the input on the screen
-  textFont("Montserrat");
   input = createInput("");
 
   // Calculate the position to center the input
@@ -85,13 +88,14 @@ function setup() {
   input.style("font-family", "Montserrat, Arial, sans-serif");
 
   // Add a label above the input
-  let label = createP("Enter the degree:");
-  label.position(width / 2 - 100, inputY - 30); // Position above the input
-  label.style("width", "200px");
-  label.style("text-align", "center");
-  label.style("font-family", "Montserrat, Arial, sans-serif");
-  label.style("margin", "10px");
-  label.style("padding", "0");
+  // let label = createP("Enter the degree:");
+
+  // label.position(width / 2 - 100, inputY - 30); // Position above the input
+  // label.style("width", "200px");
+  // label.style("text-align", "center");
+  // label.style("font-family", "Montserrat, Arial, sans-serif");
+  // label.style("margin", "10px");
+  // label.style("padding", "0");
 
   // Create Website Page elements but hide them initially
   setupWebsiteElements();
@@ -99,35 +103,62 @@ function setup() {
 }
 
 function setupWebsiteElements() {
-  textFont("Arial");
-  // Website Page setup
+  textFont("Montserrat");
+
+  // Calculate center of canvas
+  let centerX = width / 2;
+
+  // Website Page setup - center the instructions text
   instructions = createP(
     "Enter a URL to embed below. Note: Many sites block embedding due to security policies."
   );
-  instructions.position(20, 10);
+  instructions.position(centerX - 250, 0);
+  instructions.style("width", "500px");
+  instructions.style("text-align", "center");
+  instructions.style("padding", "15px");
+  instructions.style("font-size", "16px");
+  instructions.style("margin-bottom", "20px");
 
-  // Create an input field for the URL
+  // Create an input field for the URL - centered
   urlInput = createInput(defaultUrl);
-  urlInput.position(20, 60);
-  urlInput.size(300);
+  urlInput.position(centerX - 180, 100);
+  urlInput.size(360);
+  urlInput.style("text-align", "center");
+  urlInput.style("padding", "12px");
+  urlInput.style("font-size", "14px");
+  urlInput.style("border-radius", "5px");
+  urlInput.style("border", "1px solid #ccc");
 
-  // Create a button to load the URL
+  // Create a button to load the URL - positioned below the input for better spacing
   loadButton = createButton("Load Website");
-  loadButton.position(330, 60);
+  loadButton.position(centerX - 75, 150);
+  loadButton.size(150, 40);
+  loadButton.style("font-size", "14px");
+  loadButton.style("padding", "5px");
+  loadButton.style("cursor", "pointer");
+  loadButton.style("background-color", "#1c1b1a");
+  loadButton.style("color", "white");
+  loadButton.style("border", "none");
+  loadButton.style("border-radius", "5px");
   loadButton.mousePressed(loadWebsite);
 
-  // Create a container div for the iframe
-  container = createDiv("");
-  container.position(20, 100);
-  container.size(width - 40, height - 120);
-  container.id("iframe-container");
-
-  // Add alternative sites dropdown
+  // Add alternative sites label - centered
   sitesLabel = createP("Or select a site known to work with embedding:");
-  sitesLabel.position(20, 90);
+  sitesLabel.position(centerX - 250, 200);
+  sitesLabel.style("width", "500px");
+  sitesLabel.style("text-align", "center");
+  sitesLabel.style("padding", "5px");
+  sitesLabel.style("font-size", "15px");
 
+  // Add alternative sites dropdown - centered
   sitesSelect = createSelect();
-  sitesSelect.position(330, 90);
+  sitesSelect.position(centerX - 125, 250);
+  sitesSelect.size(250);
+  sitesSelect.style("display", "block");
+  sitesSelect.style("margin", "0 auto");
+  sitesSelect.style("padding", "5px");
+  sitesSelect.style("font-size", "14px");
+  sitesSelect.style("border-radius", "5px");
   sitesSelect.option("p5.js", "https://p5js.org");
   sitesSelect.option("Wikipedia", "https://en.wikipedia.org");
   // sitesSelect.option("OpenProcessing", "https://www.openprocessing.org");
@@ -136,6 +167,15 @@ function setupWebsiteElements() {
     urlInput.value(sitesSelect.value());
     loadWebsite();
   });
+
+  // Create a container div for the iframe - centered with more space from controls
+  container = createDiv("");
+  container.position(centerX - (width - 80) / 2, 310);
+  container.size(width - 80, height - 350);
+  container.id("iframe-container");
+  container.style("border", "1px solid #ddd");
+  container.style("border-radius", "5px");
+  container.style("background-color", "#e6bc8c");
 }
 
 function hideWebsiteElements() {
@@ -159,6 +199,7 @@ function hideWebsiteElements() {
 function showWebsiteElements() {
   // Clear the background to white first
   background(255);
+  background(230, 188, 140, 100);
 
   // Show all website-related elements
   instructions.show();
@@ -209,6 +250,7 @@ function drawImage(blurAmount, imageID) {
       filter(BLUR, blurAmount);
       break;
     case "balloon":
+      background(230, 188, 140, 100);
       image(balloonImg, 0, 0, width, height);
       filter(BLUR, blurAmount);
       break;
