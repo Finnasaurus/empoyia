@@ -66,7 +66,7 @@ function setup() {
   textFont(bigFont);
   textAlign(CENTER);
   textSize(64);
-  text("EMPYOICA", width / 2, height / 2 - 100);
+  text("EMPOYIA", width / 2, height / 2 - 100);
 
   textFont("Montserrat");
   textSize(28);
@@ -239,13 +239,11 @@ function draw() {
   if (onSubmit) {
     //draw image with blur
     if (measurements) {
-      blurAmount = measurements.distance / 1000 - 3; // fake function
+      blurAmount = measurements.distance / 1000 - 3;
       console.log(blurAmount);
     }
     drawImage(blurAmount, imageID);
   } else {
-    // image(faceMeasurer.video, 0, 0, width, height);
-    // faceMeasurer.drawFacePoints(this);
   }
 }
 
@@ -270,11 +268,6 @@ function drawImage(blurAmount, imageID) {
         if (iframe) {
           fill(240);
           noStroke();
-          // rect(0, 0, width, 40);
-
-          // fill(0);
-          // textSize(12);
-          // text("Current site: " + urlInput.value(), 20, 30);
 
           // Apply blur to the iframe
           if (blurAmount > 0) {
