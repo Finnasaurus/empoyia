@@ -72,6 +72,13 @@ function setup() {
   textSize(28);
   text("Enter your degree", width / 2, height / 2);
 
+  textSize(18);
+  text(
+    `Use the keyboard to navigate. "1" - Snellen's Chart, "2" - Balloon Diagram, "3" - Website`,
+    width / 2,
+    height / 2 + 100
+  );
+
   // Center the input on the screen
   input = createInput("");
 
@@ -218,6 +225,8 @@ function showWebsiteElements() {
 }
 
 function draw() {
+  cursor(CROSS);
+
   const measurements = faceMeasurer.getMeasurements();
 
   if (measurements) {
@@ -250,7 +259,7 @@ function drawImage(blurAmount, imageID) {
       filter(BLUR, blurAmount);
       break;
     case "balloon":
-      background(230, 188, 140, 100);
+      background(10);
       image(balloonImg, 0, 0, width, height);
       filter(BLUR, blurAmount);
       break;
@@ -298,23 +307,28 @@ function keyPressed() {
     blurAmount += 1;
     console.log(blurAmount);
   }
-  if (key === "o") {
-    imageID = "snellen";
-    if (websiteElementsVisible) {
-      hideWebsiteElements();
+  if (key === "1") {
+    if (onSubmit) {
+      imageID = "snellen";
+      if (websiteElementsVisible) {
+        hideWebsiteElements();
+      }
     }
   }
-  if (key === "p") {
-    imageID = "balloon";
-    if (websiteElementsVisible) {
-      hideWebsiteElements();
+  if (key === "2") {
+    if (onSubmit) {
+      imageID = "balloon";
+      if (websiteElementsVisible) {
+        hideWebsiteElements();
+      }
     }
   }
-  if (key === "i") {
-    imageID = "website";
-    // Show website elements when 'i' is pressed
-    if (!websiteElementsVisible) {
-      showWebsiteElements();
+  if (key === "3") {
+    if (onSubmit) {
+      imageID = "website";
+      if (!websiteElementsVisible) {
+        showWebsiteElements();
+      }
     }
   }
   if (keyCode === 13) {
